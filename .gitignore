@@ -1,0 +1,19 @@
+# Build output
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.suo
+
+# VS Code
+.vscode/
+
+# JetBrains Rider
+.idea/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
