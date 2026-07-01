@@ -2,6 +2,8 @@ using JobFlowApi.Models;
 using JobFlowApi.DTO;
 using JobFlowApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JobFlowApi.Controllers;
 
@@ -23,7 +25,7 @@ public class JobsController : ControllerBase
         return Ok(jobs);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public IActionResult GetJobById(int id)
     {
         var job = _jobService.GetJobById(id);
@@ -86,4 +88,30 @@ public class JobsController : ControllerBase
         var count = _jobService.GetJobsCount(title);
         return Ok(count);
     }
+
+    [HttpGet("{me}")]
+    public IActionResult GetLoggedInUser()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            throw new UnauthorizedAccessException("User is not logged in.");
+        }
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+        return Ok(new
+        {
+            userId,
+            email,
+            role
+        });
+    }
+
+    [HttpDelete("admin-test/{id}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult AdminDeleteTest(int id)
+    {
+        return Ok("Only admin can access this endpoint.");
+}
 }
