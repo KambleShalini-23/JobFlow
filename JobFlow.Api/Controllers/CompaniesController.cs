@@ -1,12 +1,14 @@
 using JobFlowApi.DTO;
 using JobFlowApi.Models;
 using JobFlowApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobFlowApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CompaniesController : ControllerBase
 {
     private readonly CompanyService _companyService;
@@ -36,6 +38,7 @@ public class CompaniesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public IActionResult CreateCompany(CompanyRequest companyRequest)
     {
         Company company = _companyService.CreateCompany(companyRequest);
@@ -50,6 +53,7 @@ public class CompaniesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public IActionResult UpdateCompany(int id, CompanyRequest companyRequest)
     {
         var company = _companyService.UpdateCompany(id, companyRequest);

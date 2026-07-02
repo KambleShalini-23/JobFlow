@@ -28,7 +28,7 @@ public class AuthService
             FullName = request.FullName,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            Role = "User"
+            Role = Role.User
         };
         
         _context.Users.Add(user);
@@ -60,5 +60,30 @@ public class AuthService
             Role = user.Role,
             Token = token
         };
+    }
+
+    public RoleRequest UpdateUserRole(RoleRequest roleRequest)
+    {
+        var user = _context.Users.FirstOrDefault(u => u.Email == roleRequest.Email);
+        
+        if(user == null)
+        {
+            throw new KeyNotFoundException($"User with email {roleRequest.Email} does not exist.");
+        }
+
+        if (!Enum.IsDefined(typeof(Role), roleRequest.Role))
+        {
+            throw new InvalidOperationException("Invalid role.");
+        }
+        
+        user.Role = roleRequest.Role;
+        _context.SaveChanges();
+
+        return new RoleRequest
+        {
+            Email = user.Email,
+            Role = user.Role
+        };
+
     }
 }

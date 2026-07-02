@@ -9,6 +9,7 @@ namespace JobFlowApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class JobsController : ControllerBase
 {
     private readonly JobService _jobService;
@@ -34,6 +35,7 @@ public class JobsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public IActionResult CreateJob(JobRequest jobRequest)
     {
         var job = _jobService.CreateJob(jobRequest);
@@ -41,6 +43,7 @@ public class JobsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public IActionResult UpdateJob(int id, JobRequest jobRequest)
     {
         var job = _jobService.UpdateJob(id, jobRequest);
@@ -48,6 +51,7 @@ public class JobsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public IActionResult DeleteJob(int id)
     {
         _jobService.DeleteJob(id);
@@ -108,10 +112,4 @@ public class JobsController : ControllerBase
         });
     }
 
-    [HttpDelete("admin-test/{id}")]
-    [Authorize(Roles = "Admin")]
-    public IActionResult AdminDeleteTest(int id)
-    {
-        return Ok("Only admin can access this endpoint.");
-}
 }

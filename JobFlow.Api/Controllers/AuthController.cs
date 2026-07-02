@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using JobFlowApi.DTO;
 using JobFlowApi.Models;
 using JobFlowApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobFlowApi.Controllers;
@@ -29,6 +31,35 @@ public class AuthController : ControllerBase
     public IActionResult Login(LoginRequest request)
     {
         var result = _authService.Login(request);
+        return Ok(result);
+    }
+
+
+    [HttpGet("{me}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetLoggedInUser()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+        {
+            throw new UnauthorizedAccessException("User is not logged in.");
+        }
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
+
+        return Ok(new
+        {
+            userId,
+            email,
+            role
+        });
+    }
+
+    [HttpPost("{role}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult UpdateUserRole(RoleRequest request)
+    {
+        var result = _authService.UpdateUserRole(request);
         return Ok(result);
     }
 }
