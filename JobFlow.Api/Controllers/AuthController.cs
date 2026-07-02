@@ -34,6 +34,21 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("logout")]
+    [Authorize]
+    public IActionResult Logout()
+    {
+        
+        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+           
+        if (email == null)
+        {
+            throw new UnauthorizedAccessException("Invalid token.");
+        }
+        _authService.Logout(email);
+
+        return Ok(new { Message = "Logged out successfully." });
+    }
 
     [HttpGet("{me}")]
     [Authorize(Roles = "Admin")]
@@ -62,4 +77,13 @@ public class AuthController : ControllerBase
         var result = _authService.UpdateUserRole(request);
         return Ok(result);
     }
+
+    [HttpPost("refresh")]
+    public IActionResult RefreshToken(RefreshTokenRequest request)
+    {
+        var result = _authService.RefreshToken(request.RefreshToken);
+        return Ok(result);
+    }
+
+
 }

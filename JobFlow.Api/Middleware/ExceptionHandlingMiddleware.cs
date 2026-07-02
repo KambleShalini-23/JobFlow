@@ -26,6 +26,10 @@ public class ExceptionHandlingMiddleware
         {
             await HandleExceptionAsync(context, HttpStatusCode.BadRequest, ex.Message);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            await HandleExceptionAsync(context, HttpStatusCode.Unauthorized, ex.Message);
+        }
         catch (Exception)
         {
             await HandleExceptionAsync(context, HttpStatusCode.InternalServerError,"Something went wrong. Please try again later.");
